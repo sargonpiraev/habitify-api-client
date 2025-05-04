@@ -1,92 +1,24 @@
 import axios, { AxiosInstance } from 'axios'
-
-// API Response Wrapper
-export interface HabitifyApiResponse<T> {
-  message: string
-  data: T
-  version: string
-  status: boolean
-}
-
-// Enums and types for Journal filters
-export type HabitStatus = 'in_progress' | 'completed' | 'failed' | 'skipped'
-export type HabitOrderBy = 'priority' | 'reminder_time' | 'status'
-export type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'any_time'
-
-export interface JournalHabitsParams {
-  target_date?: string // ISO-8601, URL-encoded if in query
-  order_by?: HabitOrderBy
-  status?: HabitStatus
-  area_id?: string
-  time_of_day?: TimeOfDay | TimeOfDay[]
-}
-
-// Goal, Progress, Area, Log, LogMethod, UnitType, Periodicity
-export type Periodicity = 'daily' | 'weekly' | 'monthly'
-export type UnitType = 'min' | 'step' | 'rep' | 'kM' | string // расширяемый тип
-export type LogMethod = 'manual' | 'auto' | string
-
-export interface Goal {
-  unit_type: UnitType
-  value: number
-  periodicity: Periodicity
-}
-
-export interface Progress {
-  current_value: number
-  target_value: number
-  unit_type: UnitType
-  periodicity: Periodicity
-  reference_date: string
-}
-
-export interface Area {
-  id: string
-  name: string
-  priority: string
-}
-
-export interface Log {
-  id: string
-  value: number
-  created_date: string
-  unit_type: UnitType
-  habit_id: string
-}
-
-// HabitStatusResponse для /status/:habit_id
-export type HabitStatusType = 'none' | 'in_progress' | 'completed' | 'skipped' | 'failed'
-export interface HabitStatusResponse {
-  status: HabitStatusType
-  progress?: Progress
-}
-
-export type UpdateHabitStatus = 'completed' | 'skipped' | 'none'
-
-export interface AddLogRequest {
-  unit_type: UnitType
-  value: number
-  target_date: string // ISO-8601
-}
-
-// Habit type (based on API example)
-export interface Habit {
-  id: string
-  name: string
-  is_archived: boolean
-  start_date: string
-  time_of_day: TimeOfDay[]
-  goal?: Goal
-  goal_history_items?: Goal[]
-  log_method: LogMethod
-  recurrence: string
-  remind?: string[]
-  area?: Area | null
-  created_date: string
-  priority: number
-  status?: HabitStatus // только при получении из журнала
-  progress?: Progress // только если статус in_progress/completed/skipped
-}
+import {
+  HabitifyApiResponse,
+  JournalHabitsParams,
+  HabitStatusResponse,
+  UpdateHabitStatus,
+  AddLogRequest,
+  Habit,
+  Mood,
+  CreateMoodRequest,
+  UpdateMoodRequest,
+  Area,
+  Log,
+  Note,
+  AddTextNoteRequest,
+  AddImageNoteRequest,
+  DeleteNotesRequest,
+  Action,
+  CreateActionRequest,
+  UpdateActionRequest
+} from './types'
 
 class HabitifyApiClient {
   private client: AxiosInstance
@@ -98,35 +30,12 @@ class HabitifyApiClient {
     })
   }
 
-  async getUser() {
-    const response = await this.client.get(`/user`)
-    return response.data
-  }
-
   /**
    * Get habits from the journal with optional filters
    * @param params JournalHabitsParams
    */
   async getJournalHabits(params?: JournalHabitsParams): Promise<Habit[]> {
-    const query: Record<string, string> = {}
-    if (params) {
-      if (params.target_date) query.target_date = encodeURIComponent(params.target_date)
-      if (params.order_by) query.order_by = params.order_by
-      if (params.status) query.status = params.status
-      if (params.area_id) query.area_id = params.area_id
-      if (params.time_of_day) {
-        query.time_of_day = Array.isArray(params.time_of_day)
-          ? params.time_of_day.join(',')
-          : params.time_of_day
-      }
-    }
-    const search =
-      Object.keys(query).length > 0
-        ? `?${Object.entries(query)
-            .map(([k, v]) => `${k}=${v}`)
-            .join('&')}`
-        : ''
-    const response = await this.client.get<HabitifyApiResponse<Habit[]>>(`/journal${search}`)
+    const response = await this.client.get<HabitifyApiResponse<Habit[]>>('/journal', { params })
     return response.data.data
   }
 
@@ -134,9 +43,9 @@ class HabitifyApiClient {
    * Get habit status for a specific date
    */
   async getHabitStatus(habitId: string, target_date?: string): Promise<HabitStatusResponse> {
-    const params = target_date ? `?target_date=${encodeURIComponent(target_date)}` : ''
     const response = await this.client.get<HabitifyApiResponse<HabitStatusResponse>>(
-      `/status/${habitId}${params}`
+      `/status/${habitId}`,
+      target_date ? { params: { target_date } } : undefined
     )
     return response.data.data
   }
@@ -156,14 +65,10 @@ class HabitifyApiClient {
    * Get logs for a habit
    */
   async getLogs(habitId: string, params?: { from?: string; to?: string }): Promise<Log[]> {
-    let query = ''
-    if (params) {
-      const q: string[] = []
-      if (params.from) q.push(`from=${encodeURIComponent(params.from)}`)
-      if (params.to) q.push(`to=${encodeURIComponent(params.to)}`)
-      if (q.length) query = '?' + q.join('&')
-    }
-    const response = await this.client.get<HabitifyApiResponse<Log[]>>(`/logs/${habitId}${query}`)
+    const response = await this.client.get<HabitifyApiResponse<Log[]>>(
+      `/logs/${habitId}`,
+      params ? { params } : undefined
+    )
     return response.data.data
   }
 
@@ -185,14 +90,139 @@ class HabitifyApiClient {
    * Delete logs for a habit in a date range
    */
   async deleteLogs(habitId: string, params?: { from?: string; to?: string }): Promise<void> {
-    let query = ''
-    if (params) {
-      const q: string[] = []
-      if (params.from) q.push(`from=${encodeURIComponent(params.from)}`)
-      if (params.to) q.push(`to=${encodeURIComponent(params.to)}`)
-      if (q.length) query = '?' + q.join('&')
-    }
-    await this.client.delete(`/logs/${habitId}${query}`)
+    await this.client.delete(
+      `/logs/${habitId}`,
+      params ? { params } : undefined
+    )
+  }
+
+  /**
+   * Get moods (optionally by date)
+   */
+  async getMoods(params?: { target_date?: string }): Promise<Mood[]> {
+    const response = await this.client.get<HabitifyApiResponse<Mood[]>>(
+      '/moods',
+      params ? { params } : undefined
+    )
+    return response.data.data
+  }
+
+  /**
+   * Get mood by id
+   */
+  async getMood(moodId: string): Promise<Mood> {
+    const response = await this.client.get<HabitifyApiResponse<Mood>>(`/moods/${moodId}`)
+    return response.data.data
+  }
+
+  /**
+   * Create a new mood
+   */
+  async createMood(data: CreateMoodRequest): Promise<void> {
+    await this.client.post('/moods', data)
+  }
+
+  /**
+   * Update mood by id
+   */
+  async updateMood(moodId: string, data: UpdateMoodRequest): Promise<void> {
+    await this.client.put(`/moods/${moodId}`, data)
+  }
+
+  /**
+   * Delete mood by id
+   */
+  async deleteMood(moodId: string): Promise<void> {
+    await this.client.delete(`/moods/${moodId}`)
+  }
+
+  /**
+   * Get all areas
+   */
+  async getAreas(): Promise<Area[]> {
+    const response = await this.client.get<HabitifyApiResponse<Area[]>>('/areas')
+    return response.data.data
+  }
+
+  /**
+   * Get all notes for a habit
+   */
+  async getNotes(habitId: string, params?: { from?: string; to?: string }): Promise<Note[]> {
+    const response = await this.client.get<HabitifyApiResponse<Note[]>>(
+      `/notes/${habitId}`,
+      params ? { params } : undefined
+    )
+    return response.data.data
+  }
+
+  /**
+   * Add a text note to a habit
+   */
+  async addTextNote(habitId: string, data: AddTextNoteRequest): Promise<void> {
+    await this.client.post(`/notes/${habitId}`, data)
+  }
+
+  /**
+   * Add an image note to a habit
+   */
+  async addImageNote(habitId: string, data: AddImageNoteRequest): Promise<void> {
+    const formData = new FormData()
+    formData.append('image', data.image)
+    formData.append('created_at', data.created_at)
+    await this.client.post(`/notes/addImageNote/${habitId}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  }
+
+  /**
+   * Delete a single note by id
+   */
+  async deleteNote(habitId: string, noteId: string): Promise<void> {
+    await this.client.delete(`/notes/${habitId}/${noteId}`)
+  }
+
+  /**
+   * Delete notes for a habit in a date range
+   */
+  async deleteNotes(habitId: string, params?: DeleteNotesRequest): Promise<void> {
+    await this.client.delete(`/notes/${habitId}`, params ? { data: params } : undefined)
+  }
+
+  /**
+   * Get all actions for a habit
+   */
+  async getActions(habitId: string): Promise<Action[]> {
+    const response = await this.client.get<HabitifyApiResponse<Action[]>>(`/actions/${habitId}`)
+    return response.data.data
+  }
+
+  /**
+   * Get a single action by id
+   */
+  async getAction(habitId: string, actionId: string): Promise<Action> {
+    const response = await this.client.get<HabitifyApiResponse<Action>>(`/actions/${habitId}/${actionId}`)
+    return response.data.data
+  }
+
+  /**
+   * Create a new action for a habit
+   */
+  async createAction(habitId: string, data: CreateActionRequest): Promise<void> {
+    await this.client.post(`/actions/${habitId}`, data)
+  }
+
+  /**
+   * Update an action by id
+   */
+  async updateAction(habitId: string, actionId: string, data: UpdateActionRequest): Promise<void> {
+    await this.client.put(`/actions/${habitId}/${actionId}`, data)
+  }
+
+  /**
+   * Delete an action by id
+   */
+  async deleteAction(habitId: string, actionId: string): Promise<void> {
+    await this.client.delete(`/actions/${habitId}/${actionId}`)
   }
 }
 
