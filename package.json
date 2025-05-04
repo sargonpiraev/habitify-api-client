@@ -1,11 +1,10 @@
 {
-  "name": "@sargonpiraev/habitify-api-client",
+  "name": "habitify-api-client",
   "version": "0.0.1",
   "description": "",
   "main": "./build/index.js",
-  "files": [
-    "build"
-  ],
+  "types": "./build/index.d.ts",
+  "files": ["build"],
   "scripts": {
     "test": "jest --passWithNoTests --coverage",
     "dev": "tsx watch ./src/index.ts",
@@ -37,9 +36,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.1"
   },
-  "dependencies": {
-    "axios": "^1.9.0"
-  },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }

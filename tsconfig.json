@@ -8,7 +8,8 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "build",
-    "types": ["node"]
+    "types": ["node"],
+    "declaration": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]
