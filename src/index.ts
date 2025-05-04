@@ -17,7 +17,7 @@ import {
   DeleteNotesRequest,
   Action,
   CreateActionRequest,
-  UpdateActionRequest
+  UpdateActionRequest,
 } from './types'
 
 class HabitifyApiClient {
@@ -90,10 +90,7 @@ class HabitifyApiClient {
    * Delete logs for a habit in a date range
    */
   async deleteLogs(habitId: string, params?: { from?: string; to?: string }): Promise<void> {
-    await this.client.delete(
-      `/logs/${habitId}`,
-      params ? { params } : undefined
-    )
+    await this.client.delete(`/logs/${habitId}`, params ? { params } : undefined)
   }
 
   /**
@@ -200,7 +197,9 @@ class HabitifyApiClient {
    * Get a single action by id
    */
   async getAction(habitId: string, actionId: string): Promise<Action> {
-    const response = await this.client.get<HabitifyApiResponse<Action>>(`/actions/${habitId}/${actionId}`)
+    const response = await this.client.get<HabitifyApiResponse<Action>>(
+      `/actions/${habitId}/${actionId}`
+    )
     return response.data.data
   }
 

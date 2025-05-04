@@ -37,11 +37,28 @@ export enum NoteType {
 }
 
 export type UnitType =
-  | 'kM' | 'm' | 'ft' | 'yd' | 'mi'
-  | 'L' | 'mL' | 'fl oz' | 'cup'
-  | 'kg' | 'g' | 'mg' | 'oz' | 'lb' | 'mcg'
-  | 'sec' | 'min' | 'hr'
-  | 'J' | 'kJ' | 'kCal' | 'cal'
+  | 'kM'
+  | 'm'
+  | 'ft'
+  | 'yd'
+  | 'mi'
+  | 'L'
+  | 'mL'
+  | 'fl oz'
+  | 'cup'
+  | 'kg'
+  | 'g'
+  | 'mg'
+  | 'oz'
+  | 'lb'
+  | 'mcg'
+  | 'sec'
+  | 'min'
+  | 'hr'
+  | 'J'
+  | 'kJ'
+  | 'kCal'
+  | 'cal'
   | 'rep'
   | string
 
