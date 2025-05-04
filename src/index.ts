@@ -20,7 +20,7 @@ import {
   UpdateActionParams,
 } from './types'
 
-class HabitifyApiClient {
+export class HabitifyApiClient {
   private client: AxiosInstance
 
   constructor(private readonly apiKey: string) {
@@ -224,5 +224,3 @@ class HabitifyApiClient {
     await this.client.delete(`/actions/${habitId}/${actionId}`)
   }
 }
-
-export default HabitifyApiClient
