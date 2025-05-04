@@ -18,7 +18,7 @@ import {
   Action,
   CreateActionParams,
   UpdateActionParams,
-} from './types'
+} from './types.js'
 
 export class HabitifyApiClient {
   private client: AxiosInstance
