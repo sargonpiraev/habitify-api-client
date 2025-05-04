@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import {
   HabitifyApiResponse,
-  JournalHabitsParams,
+  GetJournalParams,
   HabitStatusResponse,
   UpdateHabitStatus,
   AddLogParams,
@@ -32,9 +32,9 @@ class HabitifyApiClient {
 
   /**
    * Get habits from the journal with optional filters
-   * @param params JournalHabitsParams
+   * @param params GetJournalParams
    */
-  async getJournalHabits(params?: JournalHabitsParams): Promise<Habit[]> {
+  async getJournal(params: GetJournalParams): Promise<Habit[]> {
     const response = await this.client.get<HabitifyApiResponse<Habit[]>>('/journal', { params })
     return response.data.data
   }

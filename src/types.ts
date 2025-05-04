@@ -8,8 +8,8 @@ export interface HabitifyApiResponse<T> {
 export type HabitStatus = 'in_progress' | 'completed' | 'failed' | 'skipped'
 export type HabitOrderBy = 'priority' | 'reminder_time' | 'status'
 
-export interface JournalHabitsParams {
-  target_date?: string // ISO-8601, URL-encoded if in query
+export interface GetJournalParams {
+  target_date: string // ISO-8601, URL-encoded if in query
   order_by?: HabitOrderBy
   status?: HabitStatus
   area_id?: string
