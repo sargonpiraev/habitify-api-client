@@ -4,20 +4,20 @@ import {
   JournalHabitsParams,
   HabitStatusResponse,
   UpdateHabitStatus,
-  AddLogRequest,
+  AddLogParams,
   Habit,
   Mood,
-  CreateMoodRequest,
-  UpdateMoodRequest,
+  CreateMoodParams,
+  UpdateMoodParams,
   Area,
   Log,
   Note,
-  AddTextNoteRequest,
-  AddImageNoteRequest,
-  DeleteNotesRequest,
+  AddTextNoteParams,
+  AddImageNoteParams,
+  DeleteNotesParams,
   Action,
-  CreateActionRequest,
-  UpdateActionRequest,
+  CreateActionParams,
+  UpdateActionParams,
 } from './types'
 
 class HabitifyApiClient {
@@ -75,7 +75,7 @@ class HabitifyApiClient {
   /**
    * Add a log for a habit
    */
-  async addLog(habitId: string, data: AddLogRequest): Promise<void> {
+  async addLog(habitId: string, data: AddLogParams): Promise<void> {
     await this.client.post(`/logs/${habitId}`, data)
   }
 
@@ -115,14 +115,14 @@ class HabitifyApiClient {
   /**
    * Create a new mood
    */
-  async createMood(data: CreateMoodRequest): Promise<void> {
+  async createMood(data: CreateMoodParams): Promise<void> {
     await this.client.post('/moods', data)
   }
 
   /**
    * Update mood by id
    */
-  async updateMood(moodId: string, data: UpdateMoodRequest): Promise<void> {
+  async updateMood(moodId: string, data: UpdateMoodParams): Promise<void> {
     await this.client.put(`/moods/${moodId}`, data)
   }
 
@@ -155,14 +155,14 @@ class HabitifyApiClient {
   /**
    * Add a text note to a habit
    */
-  async addTextNote(habitId: string, data: AddTextNoteRequest): Promise<void> {
+  async addTextNote(habitId: string, data: AddTextNoteParams): Promise<void> {
     await this.client.post(`/notes/${habitId}`, data)
   }
 
   /**
    * Add an image note to a habit
    */
-  async addImageNote(habitId: string, data: AddImageNoteRequest): Promise<void> {
+  async addImageNote(habitId: string, data: AddImageNoteParams): Promise<void> {
     const formData = new FormData()
     formData.append('image', data.image)
     formData.append('created_at', data.created_at)
@@ -181,7 +181,7 @@ class HabitifyApiClient {
   /**
    * Delete notes for a habit in a date range
    */
-  async deleteNotes(habitId: string, params?: DeleteNotesRequest): Promise<void> {
+  async deleteNotes(habitId: string, params?: DeleteNotesParams): Promise<void> {
     await this.client.delete(`/notes/${habitId}`, params ? { data: params } : undefined)
   }
 
@@ -206,14 +206,14 @@ class HabitifyApiClient {
   /**
    * Create a new action for a habit
    */
-  async createAction(habitId: string, data: CreateActionRequest): Promise<void> {
+  async createAction(habitId: string, data: CreateActionParams): Promise<void> {
     await this.client.post(`/actions/${habitId}`, data)
   }
 
   /**
    * Update an action by id
    */
-  async updateAction(habitId: string, actionId: string, data: UpdateActionRequest): Promise<void> {
+  async updateAction(habitId: string, actionId: string, data: UpdateActionParams): Promise<void> {
     await this.client.put(`/actions/${habitId}/${actionId}`, data)
   }
 

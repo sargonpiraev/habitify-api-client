@@ -113,7 +113,7 @@ export interface HabitStatusResponse {
 
 export type UpdateHabitStatus = 'completed' | 'skipped' | 'none'
 
-export interface AddLogRequest {
+export interface AddLogParams {
   unit_type: UnitType
   value: number
   target_date: string // ISO-8601
@@ -143,12 +143,12 @@ export interface Mood {
   created_at: string
 }
 
-export interface CreateMoodRequest {
+export interface CreateMoodParams {
   value: MoodValue
   created_at: string // ISO-8601
 }
 
-export interface UpdateMoodRequest {
+export interface UpdateMoodParams {
   value: MoodValue
   created_at: string // ISO-8601
 }
@@ -162,17 +162,17 @@ export interface Note {
   image_url?: string | null
 }
 
-export interface AddTextNoteRequest {
+export interface AddTextNoteParams {
   content: string
   created: string // ISO-8601
 }
 
-export interface AddImageNoteRequest {
+export interface AddImageNoteParams {
   image: File | Blob
   created_at: string // ISO-8601
 }
 
-export interface DeleteNotesRequest {
+export interface DeleteNotesParams {
   from?: string
   to?: string
 }
@@ -186,12 +186,12 @@ export interface Action {
   habit_id: string
 }
 
-export interface CreateActionRequest {
+export interface CreateActionParams {
   title: string
   remind_at: string // ISO-8601
 }
 
-export interface UpdateActionRequest {
+export interface UpdateActionParams {
   status?: ActionStatus
   title?: string
   remind_at?: string // ISO-8601
