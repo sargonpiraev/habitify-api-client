@@ -15,10 +15,10 @@ async function main() {
 
   try {
     // Получить список привычек на сегодня
-    const habits = await client.getJournal()
+    const habits = await client.getJournal({ target_date: '' })
     console.log('Habits:', habits)
   } catch (err) {
-    console.error('Error:', err)
+    console.error('Error:', String(err))
   }
 }
 

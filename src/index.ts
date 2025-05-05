@@ -31,10 +31,25 @@ import {
   UpdateActionParamsFull,
   DeleteActionParams,
 } from './types.js'
-import { format } from 'date-fns-tz'
 
 // YYYY-MM-DDTHH:mm:ss±hh:mm
-export const toISOString = (date: string) => format(date, "yyyy-MM-dd'T'HH:mm:ssXXX")
+export const toISOString = (date: string) => {
+  const d = new Date(date);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  const seconds = pad(d.getSeconds());
+  const offset = -d.getTimezoneOffset();
+  const sign = offset >= 0 ? '+' : '-';
+  const absOffset = Math.abs(offset);
+  const offsetHours = pad(Math.floor(absOffset / 60));
+  const offsetMinutes = pad(absOffset % 60);
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetMinutes}`;
+}
+
 const getTargetDate = (date: string | undefined) => toISOString(date ?? new Date().toISOString())
 
 type Logger = {
