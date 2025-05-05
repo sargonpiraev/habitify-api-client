@@ -59,7 +59,7 @@ type Logger = {
 }
 
 export class HabitifyApiClient {
-  private client: AxiosInstance
+  public client: AxiosInstance
 
   constructor(
     private readonly apiKey: string,
