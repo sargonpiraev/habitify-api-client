@@ -9,7 +9,7 @@ export type HabitStatus = 'in_progress' | 'completed' | 'failed' | 'skipped'
 export type HabitOrderBy = 'priority' | 'reminder_time' | 'status'
 
 export interface GetJournalParams {
-  target_date?: string // ISO-8601, URL-encoded if in query
+  target_date?: string
   order_by?: HabitOrderBy
   status?: HabitStatus
   area_id?: string
@@ -106,7 +106,7 @@ export interface Log {
 }
 
 export type HabitStatusType = 'none' | 'in_progress' | 'completed' | 'skipped' | 'failed'
-export interface HabitStatusResponse {
+export interface GetHabitStatusResult {
   status: HabitStatusType
   progress?: Progress
 }
@@ -116,7 +116,7 @@ export type UpdateHabitStatus = 'completed' | 'skipped' | 'none'
 export interface AddLogParams {
   unit_type: UnitType
   value: number
-  target_date: string // ISO-8601
+  target_date: string
 }
 
 export interface Habit {
@@ -195,4 +195,104 @@ export interface UpdateActionParams {
   status?: ActionStatus
   title?: string
   remind_at?: string // ISO-8601
+}
+
+// --- Params types for HabitifyApiClient methods ---
+
+export interface GetHabitStatusParams {
+  habitId: string
+  target_date?: string
+}
+
+export interface UpdateHabitStatusParams {
+  habitId: string
+  status: UpdateHabitStatus
+  target_date?: string
+}
+
+export interface GetLogsParams {
+  habitId: string
+  from?: string
+  to?: string
+}
+
+export interface AddLogParamsFull extends AddLogParams {
+  habitId: string
+}
+
+export interface DeleteLogParams {
+  habitId: string
+  logId: string
+}
+
+export interface DeleteLogsParamsFull {
+  habitId: string
+  from?: string
+  to?: string
+}
+
+export interface GetMoodsParams {
+  target_date?: string
+}
+
+export interface GetMoodParams {
+  moodId: string
+}
+
+export type CreateMoodParamsFull = CreateMoodParams
+
+export interface UpdateMoodParamsFull extends UpdateMoodParams {
+  moodId: string
+}
+
+export interface DeleteMoodParams {
+  moodId: string
+}
+
+export type GetAreasParams = object
+
+export interface GetNotesParams {
+  habitId: string
+  from?: string
+  to?: string
+}
+
+export interface AddTextNoteParamsFull extends AddTextNoteParams {
+  habitId: string
+}
+
+export interface AddImageNoteParamsFull extends AddImageNoteParams {
+  habitId: string
+}
+
+export interface DeleteNoteParams {
+  habitId: string
+  noteId: string
+}
+
+export interface DeleteNotesParamsFull extends DeleteNotesParams {
+  habitId: string
+}
+
+export interface GetActionsParams {
+  habitId: string
+}
+
+export interface GetActionParams {
+  habitId: string
+  actionId: string
+}
+
+export interface CreateActionParamsFull extends CreateActionParams {
+  habitId: string
+}
+
+export interface UpdateActionParamsFull extends UpdateActionParams {
+  habitId: string
+  actionId: string
+}
+
+export interface DeleteActionParams {
+  habitId: string
+  actionId: string
 }
