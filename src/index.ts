@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import {
-  HabitifyApiResponse,
+  ApiResponse,
   GetJournalParams,
   HabitStatusResponse,
   UpdateHabitStatus,
@@ -28,6 +28,37 @@ export class HabitifyApiClient {
       baseURL: 'https://api.habitify.me',
       headers: { Authorization: this.apiKey },
     })
+    this.client.interceptors.request.use(
+      (request) => {
+        const { method, url, params } = request
+        console.debug('Starting Request', JSON.stringify({ method, url, params }, null, 2))
+        return request
+      },
+      (error) => {
+        const {
+          message,
+          response: { data },
+        } = error
+        console.debug('Request Error:', { message, response: { data } })
+        return Promise.reject(error)
+      }
+    )
+    this.client.interceptors.response.use(
+      (response) => {
+        const { data } = response
+        console.log('Response:', JSON.stringify({ data }))
+        if (data.status === false) throw new Error(data.message || 'Unknown API error')
+        return response
+      },
+      (error) => {
+        const {
+          message,
+          response: { data },
+        } = error
+        console.debug('Response Error:', { message, response: { data } })
+        return Promise.reject(error)
+      }
+    )
   }
 
   /**
@@ -35,18 +66,23 @@ export class HabitifyApiClient {
    * @param params GetJournalParams
    */
   async getJournal(params: GetJournalParams): Promise<Habit[]> {
-    const response = await this.client.get<HabitifyApiResponse<Habit[]>>('/journal', { params })
+    params.target_date = params.target_date || new Date().toISOString()
+    const response = await this.client.get<ApiResponse<Habit[]>>('/journal', { params })
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
   /**
    * Get habit status for a specific date
    */
-  async getHabitStatus(habitId: string, target_date?: string): Promise<HabitStatusResponse> {
-    const response = await this.client.get<HabitifyApiResponse<HabitStatusResponse>>(
-      `/status/${habitId}`,
-      target_date ? { params: { target_date } } : undefined
-    )
+  async getHabitStatus(
+    habitId: string,
+    target_date: string = new Date().toISOString()
+  ): Promise<HabitStatusResponse> {
+    const response = await this.client.get<ApiResponse<HabitStatusResponse>>(`/status/${habitId}`, {
+      params: { target_date },
+    })
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -56,19 +92,19 @@ export class HabitifyApiClient {
   async updateHabitStatus(
     habitId: string,
     status: UpdateHabitStatus,
-    target_date: string
+    target_date: string = new Date().toISOString()
   ): Promise<void> {
-    await this.client.put(`/status/${habitId}`, { status, target_date })
+    const response = await this.client.put(`/status/${habitId}`, { status, target_date })
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Get logs for a habit
    */
-  async getLogs(habitId: string, params?: { from?: string; to?: string }): Promise<Log[]> {
-    const response = await this.client.get<HabitifyApiResponse<Log[]>>(
-      `/logs/${habitId}`,
-      params ? { params } : undefined
-    )
+  async getLogs(habitId: string, params: { from?: string; to?: string }): Promise<Log[]> {
+    const response = await this.client.get<ApiResponse<Log[]>>(`/logs/${habitId}`, { params })
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -76,31 +112,37 @@ export class HabitifyApiClient {
    * Add a log for a habit
    */
   async addLog(habitId: string, data: AddLogParams): Promise<void> {
-    await this.client.post(`/logs/${habitId}`, data)
+    const response = await this.client.post(`/logs/${habitId}`, data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete a single log by id
    */
   async deleteLog(habitId: string, logId: string): Promise<void> {
-    await this.client.delete(`/logs/${habitId}/${logId}`)
+    const response = await this.client.delete(`/logs/${habitId}/${logId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete logs for a habit in a date range
    */
   async deleteLogs(habitId: string, params?: { from?: string; to?: string }): Promise<void> {
-    await this.client.delete(`/logs/${habitId}`, params ? { params } : undefined)
+    const response = await this.client.delete(`/logs/${habitId}`, params ? { params } : undefined)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Get moods (optionally by date)
    */
-  async getMoods(params?: { target_date?: string }): Promise<Mood[]> {
-    const response = await this.client.get<HabitifyApiResponse<Mood[]>>(
-      '/moods',
-      params ? { params } : undefined
-    )
+  async getMoods(target_date: string = new Date().toISOString()): Promise<Mood[]> {
+    const response = await this.client.get<ApiResponse<Mood[]>>('/moods', {
+      params: { target_date },
+    })
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -108,7 +150,8 @@ export class HabitifyApiClient {
    * Get mood by id
    */
   async getMood(moodId: string): Promise<Mood> {
-    const response = await this.client.get<HabitifyApiResponse<Mood>>(`/moods/${moodId}`)
+    const response = await this.client.get<ApiResponse<Mood>>(`/moods/${moodId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -116,28 +159,35 @@ export class HabitifyApiClient {
    * Create a new mood
    */
   async createMood(data: CreateMoodParams): Promise<void> {
-    await this.client.post('/moods', data)
+    const response = await this.client.post('/moods', data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Update mood by id
    */
   async updateMood(moodId: string, data: UpdateMoodParams): Promise<void> {
-    await this.client.put(`/moods/${moodId}`, data)
+    const response = await this.client.put(`/moods/${moodId}`, data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete mood by id
    */
   async deleteMood(moodId: string): Promise<void> {
-    await this.client.delete(`/moods/${moodId}`)
+    const response = await this.client.delete(`/moods/${moodId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Get all areas
    */
   async getAreas(): Promise<Area[]> {
-    const response = await this.client.get<HabitifyApiResponse<Area[]>>('/areas')
+    const response = await this.client.get<ApiResponse<Area[]>>('/areas')
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -145,10 +195,11 @@ export class HabitifyApiClient {
    * Get all notes for a habit
    */
   async getNotes(habitId: string, params?: { from?: string; to?: string }): Promise<Note[]> {
-    const response = await this.client.get<HabitifyApiResponse<Note[]>>(
+    const response = await this.client.get<ApiResponse<Note[]>>(
       `/notes/${habitId}`,
       params ? { params } : undefined
     )
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -156,7 +207,9 @@ export class HabitifyApiClient {
    * Add a text note to a habit
    */
   async addTextNote(habitId: string, data: AddTextNoteParams): Promise<void> {
-    await this.client.post(`/notes/${habitId}`, data)
+    const response = await this.client.post(`/notes/${habitId}`, data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
@@ -166,30 +219,39 @@ export class HabitifyApiClient {
     const formData = new FormData()
     formData.append('image', data.image)
     formData.append('created_at', data.created_at)
-    await this.client.post(`/notes/addImageNote/${habitId}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    const headers = { 'Content-Type': 'multipart/form-data' }
+    const response = await this.client.post(`/notes/addImageNote/${habitId}`, formData, { headers })
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete a single note by id
    */
   async deleteNote(habitId: string, noteId: string): Promise<void> {
-    await this.client.delete(`/notes/${habitId}/${noteId}`)
+    const response = await this.client.delete(`/notes/${habitId}/${noteId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete notes for a habit in a date range
    */
   async deleteNotes(habitId: string, params?: DeleteNotesParams): Promise<void> {
-    await this.client.delete(`/notes/${habitId}`, params ? { data: params } : undefined)
+    const response = await this.client.delete(
+      `/notes/${habitId}`,
+      params ? { data: params } : undefined
+    )
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Get all actions for a habit
    */
   async getActions(habitId: string): Promise<Action[]> {
-    const response = await this.client.get<HabitifyApiResponse<Action[]>>(`/actions/${habitId}`)
+    const response = await this.client.get<ApiResponse<Action[]>>(`/actions/${habitId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -197,9 +259,8 @@ export class HabitifyApiClient {
    * Get a single action by id
    */
   async getAction(habitId: string, actionId: string): Promise<Action> {
-    const response = await this.client.get<HabitifyApiResponse<Action>>(
-      `/actions/${habitId}/${actionId}`
-    )
+    const response = await this.client.get<ApiResponse<Action>>(`/actions/${habitId}/${actionId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
     return response.data.data
   }
 
@@ -207,20 +268,26 @@ export class HabitifyApiClient {
    * Create a new action for a habit
    */
   async createAction(habitId: string, data: CreateActionParams): Promise<void> {
-    await this.client.post(`/actions/${habitId}`, data)
+    const response = await this.client.post(`/actions/${habitId}`, data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Update an action by id
    */
   async updateAction(habitId: string, actionId: string, data: UpdateActionParams): Promise<void> {
-    await this.client.put(`/actions/${habitId}/${actionId}`, data)
+    const response = await this.client.put(`/actions/${habitId}/${actionId}`, data)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 
   /**
    * Delete an action by id
    */
   async deleteAction(habitId: string, actionId: string): Promise<void> {
-    await this.client.delete(`/actions/${habitId}/${actionId}`)
+    const response = await this.client.delete(`/actions/${habitId}/${actionId}`)
+    if (response.data.status === false) throw new Error(response.data.message)
+    return response.data.data
   }
 }

@@ -1,4 +1,4 @@
-export interface HabitifyApiResponse<T> {
+export interface ApiResponse<T> {
   message: string
   data: T
   version: string
@@ -9,7 +9,7 @@ export type HabitStatus = 'in_progress' | 'completed' | 'failed' | 'skipped'
 export type HabitOrderBy = 'priority' | 'reminder_time' | 'status'
 
 export interface GetJournalParams {
-  target_date: string // ISO-8601, URL-encoded if in query
+  target_date?: string // ISO-8601, URL-encoded if in query
   order_by?: HabitOrderBy
   status?: HabitStatus
   area_id?: string
