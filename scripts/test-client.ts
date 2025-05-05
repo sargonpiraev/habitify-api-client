@@ -7,7 +7,11 @@ async function main() {
     process.exit(1)
   }
 
-  const client = new HabitifyApiClient(apiKey)
+  const client = new HabitifyApiClient(apiKey, {
+    log: console.log,
+    error: console.error,
+    debug: console.debug,
+  })
 
   try {
     // Получить список привычек на сегодня

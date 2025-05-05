@@ -71,15 +71,16 @@ export class HabitifyApiClient {
       (response) => {
         const { data } = response
         this.logger.debug('Response:', JSON.stringify({ data }))
-        if (data.status === false) throw new Error(data.message || 'Unknown API error')
+        const errorMessage = data.message || 'Unknown API error'
+        if (data.status === false) throw new Error(errorMessage)
         return response
       },
       (error) => {
         const { message, response } = error
         const { data } = response
         this.logger.error('Response Error:', { message, response: { data } })
-        if (data.status === false)
-          return Promise.reject(new Error(data.message || 'Unknown API error'))
+        const errorMessage = data.message || 'Unknown API error'
+        if (data.status === false) throw new Error(errorMessage)
         return Promise.reject(error)
       }
     )
