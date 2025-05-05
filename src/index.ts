@@ -37,10 +37,19 @@ import { format } from 'date-fns-tz'
 export const toISOString = (date: string) => format(date, "yyyy-MM-dd'T'HH:mm:ssXXX")
 const getTargetDate = (date: string | undefined) => toISOString(date ?? new Date().toISOString())
 
+type Logger = {
+  log: (...message: (string | object)[]) => void
+  error: (...message: (string | object)[]) => void
+  debug: (...message: (string | object)[]) => void
+}
+
 export class HabitifyApiClient {
   private client: AxiosInstance
 
-  constructor(private readonly apiKey: string) {
+  constructor(
+    private readonly apiKey: string,
+    private readonly logger: Logger
+  ) {
     this.client = axios.create({
       baseURL: 'https://api.habitify.me',
       headers: { Authorization: this.apiKey },
@@ -48,27 +57,27 @@ export class HabitifyApiClient {
     this.client.interceptors.request.use(
       (request) => {
         const { method, url, params } = request
-        console.log('Request', JSON.stringify({ method, url, params }, null, 2))
+        this.logger.debug('Request', JSON.stringify({ method, url, params }, null, 2))
         return request
       },
       (error) => {
         const { message, response } = error
         const { data } = response
-        console.error('Request Error:', { message, response: { data } })
+        this.logger.error('Request Error:', { message, response: { data } })
         return Promise.reject(error)
       }
     )
     this.client.interceptors.response.use(
       (response) => {
         const { data } = response
-        console.log('Response:', JSON.stringify({ data }))
+        this.logger.debug('Response:', JSON.stringify({ data }))
         if (data.status === false) throw new Error(data.message || 'Unknown API error')
         return response
       },
       (error) => {
         const { message, response } = error
         const { data } = response
-        console.error('Response Error:', { message, response: { data } })
+        this.logger.error('Response Error:', { message, response: { data } })
         if (data.status === false)
           return Promise.reject(new Error(data.message || 'Unknown API error'))
         return Promise.reject(error)
