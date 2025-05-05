@@ -89,7 +89,7 @@ export class HabitifyApiClient {
   /**
    * Get habits from the journal with optional filters
    */
-  async getJournal(params: GetJournalParams): Promise<Habit[]> {
+  async getJournal(params: GetJournalParams = {}): Promise<Habit[]> {
     params.target_date = getTargetDate(params.target_date)
     const response = await this.client.get<ApiResponse<Habit[]>>('/journal', { params })
     return response.data.data

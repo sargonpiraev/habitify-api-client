@@ -15,7 +15,7 @@ async function main() {
 
   try {
     // Получить список привычек на сегодня
-    const habits = await client.getJournal({})
+    const habits = await client.getJournal()
     console.log('Habits:', habits)
   } catch (err) {
     console.error('Error:', err)
