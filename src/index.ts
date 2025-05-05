@@ -99,10 +99,10 @@ export class HabitifyApiClient {
    * Get habit status for a specific date
    */
   async getHabitStatus(_params: GetHabitStatusParams): Promise<GetHabitStatusResult> {
-    const { habitId, target_date } = _params
+    const { habit_id, target_date } = _params
     const params = { target_date: getTargetDate(target_date) }
     const response = await this.client.get<ApiResponse<GetHabitStatusResult>>(
-      `/status/${habitId}`,
+      `/status/${habit_id}`,
       { params }
     )
     return response.data.data
@@ -112,9 +112,9 @@ export class HabitifyApiClient {
    * Update habit status for a specific date
    */
   async updateHabitStatus(params: UpdateHabitStatusParams): Promise<void> {
-    const { habitId, status, target_date } = params
+    const { habit_id, status, target_date } = params
     const body = { status, target_date: getTargetDate(target_date) }
-    const response = await this.client.put(`/status/${habitId}`, body)
+    const response = await this.client.put(`/status/${habit_id}`, body)
     return response.data.data
   }
 
@@ -122,8 +122,8 @@ export class HabitifyApiClient {
    * Get logs for a habit
    */
   async getLogs(_params: GetLogsParams): Promise<Log[]> {
-    const { habitId, ...params } = _params
-    const response = await this.client.get<ApiResponse<Log[]>>(`/logs/${habitId}`, { params })
+    const { habit_id, ...params } = _params
+    const response = await this.client.get<ApiResponse<Log[]>>(`/logs/${habit_id}`, { params })
     return response.data.data
   }
 
@@ -131,9 +131,9 @@ export class HabitifyApiClient {
    * Add a log for a habit
    */
   async addLog(_params: AddLogParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
+    const { habit_id, ...params } = _params
     params.target_date = getTargetDate(params.target_date)
-    const response = await this.client.post(`/logs/${habitId}`, params)
+    const response = await this.client.post(`/logs/${habit_id}`, params)
     return response.data.data
   }
 
@@ -141,8 +141,8 @@ export class HabitifyApiClient {
    * Delete a single log by id
    */
   async deleteLog(params: DeleteLogParams): Promise<void> {
-    const { habitId, logId } = params
-    const response = await this.client.delete(`/logs/${habitId}/${logId}`)
+    const { habit_id, log_id } = params
+    const response = await this.client.delete(`/logs/${habit_id}/${log_id}`)
     return response.data.data
   }
 
@@ -150,8 +150,8 @@ export class HabitifyApiClient {
    * Delete logs for a habit in a date range
    */
   async deleteLogs(_params: DeleteLogsParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
-    const response = await this.client.delete(`/logs/${habitId}`, { params })
+    const { habit_id, ...params } = _params
+    const response = await this.client.delete(`/logs/${habit_id}`, { params })
     return response.data.data
   }
 
@@ -168,8 +168,8 @@ export class HabitifyApiClient {
    * Get mood by id
    */
   async getMood(params: GetMoodParams): Promise<Mood> {
-    const { moodId } = params
-    const response = await this.client.get<ApiResponse<Mood>>(`/moods/${moodId}`)
+    const { mood_id } = params
+    const response = await this.client.get<ApiResponse<Mood>>(`/moods/${mood_id}`)
     return response.data.data
   }
 
@@ -185,8 +185,8 @@ export class HabitifyApiClient {
    * Update mood by id
    */
   async updateMood(_params: UpdateMoodParamsFull): Promise<void> {
-    const { moodId, ...params } = _params
-    const response = await this.client.put(`/moods/${moodId}`, params)
+    const { mood_id, ...params } = _params
+    const response = await this.client.put(`/moods/${mood_id}`, params)
     return response.data.data
   }
 
@@ -194,8 +194,8 @@ export class HabitifyApiClient {
    * Delete mood by id
    */
   async deleteMood(params: DeleteMoodParams): Promise<void> {
-    const { moodId } = params
-    const response = await this.client.delete(`/moods/${moodId}`)
+    const { mood_id } = params
+    const response = await this.client.delete(`/moods/${mood_id}`)
     return response.data.data
   }
 
@@ -211,8 +211,8 @@ export class HabitifyApiClient {
    * Get all notes for a habit
    */
   async getNotes(_params: GetNotesParams): Promise<Note[]> {
-    const { habitId, ...params } = _params
-    const response = await this.client.get<ApiResponse<Note[]>>(`/notes/${habitId}`, { params })
+    const { habit_id, ...params } = _params
+    const response = await this.client.get<ApiResponse<Note[]>>(`/notes/${habit_id}`, { params })
     return response.data.data
   }
 
@@ -220,8 +220,8 @@ export class HabitifyApiClient {
    * Add a text note to a habit
    */
   async addTextNote(_params: AddTextNoteParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
-    const response = await this.client.post(`/notes/${habitId}`, params)
+    const { habit_id, ...params } = _params
+    const response = await this.client.post(`/notes/${habit_id}`, params)
     return response.data.data
   }
 
@@ -229,12 +229,14 @@ export class HabitifyApiClient {
    * Add an image note to a habit
    */
   async addImageNote(_params: AddImageNoteParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
+    const { habit_id, ...params } = _params
     const formData = new FormData()
     formData.append('image', params.image)
     formData.append('created_at', params.created_at)
     const headers = { 'Content-Type': 'multipart/form-data' }
-    const response = await this.client.post(`/notes/addImageNote/${habitId}`, formData, { headers })
+    const response = await this.client.post(`/notes/addImageNote/${habit_id}`, formData, {
+      headers,
+    })
     return response.data.data
   }
 
@@ -242,8 +244,8 @@ export class HabitifyApiClient {
    * Delete a single note by id
    */
   async deleteNote(params: DeleteNoteParams): Promise<void> {
-    const { habitId, noteId } = params
-    const response = await this.client.delete(`/notes/${habitId}/${noteId}`)
+    const { habit_id, note_id } = params
+    const response = await this.client.delete(`/notes/${habit_id}/${note_id}`)
     return response.data.data
   }
 
@@ -251,8 +253,8 @@ export class HabitifyApiClient {
    * Delete notes for a habit in a date range
    */
   async deleteNotes(_params: DeleteNotesParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
-    const response = await this.client.delete(`/notes/${habitId}`, { params })
+    const { habit_id, ...params } = _params
+    const response = await this.client.delete(`/notes/${habit_id}`, { params })
     return response.data.data
   }
 
@@ -260,8 +262,8 @@ export class HabitifyApiClient {
    * Get all actions for a habit
    */
   async getActions(params: GetActionsParams): Promise<Action[]> {
-    const { habitId } = params
-    const response = await this.client.get<ApiResponse<Action[]>>(`/actions/${habitId}`)
+    const { habit_id } = params
+    const response = await this.client.get<ApiResponse<Action[]>>(`/actions/${habit_id}`)
     return response.data.data
   }
 
@@ -269,8 +271,8 @@ export class HabitifyApiClient {
    * Get a single action by id
    */
   async getAction(params: GetActionParams): Promise<Action> {
-    const { habitId, actionId } = params
-    const response = await this.client.get<ApiResponse<Action>>(`/actions/${habitId}/${actionId}`)
+    const { habit_id, action_id } = params
+    const response = await this.client.get<ApiResponse<Action>>(`/actions/${habit_id}/${action_id}`)
     return response.data.data
   }
 
@@ -278,8 +280,8 @@ export class HabitifyApiClient {
    * Create a new action for a habit
    */
   async createAction(_params: CreateActionParamsFull): Promise<void> {
-    const { habitId, ...params } = _params
-    const response = await this.client.post(`/actions/${habitId}`, params)
+    const { habit_id, ...params } = _params
+    const response = await this.client.post(`/actions/${habit_id}`, params)
     return response.data.data
   }
 
@@ -287,8 +289,8 @@ export class HabitifyApiClient {
    * Update an action by id
    */
   async updateAction(_params: UpdateActionParamsFull): Promise<void> {
-    const { habitId, actionId, ...params } = _params
-    const response = await this.client.put(`/actions/${habitId}/${actionId}`, params)
+    const { habit_id, action_id, ...params } = _params
+    const response = await this.client.put(`/actions/${habit_id}/${action_id}`, params)
     return response.data.data
   }
 
@@ -296,8 +298,8 @@ export class HabitifyApiClient {
    * Delete an action by id
    */
   async deleteAction(params: DeleteActionParams): Promise<void> {
-    const { habitId, actionId } = params
-    const response = await this.client.delete(`/actions/${habitId}/${actionId}`)
+    const { habit_id, action_id } = params
+    const response = await this.client.delete(`/actions/${habit_id}/${action_id}`)
     return response.data.data
   }
 }

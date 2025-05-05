@@ -164,7 +164,7 @@ export interface Note {
 
 export interface AddTextNoteParams {
   content: string
-  created: string // ISO-8601
+  created_at: string // ISO-8601
 }
 
 export interface AddImageNoteParams {
@@ -200,33 +200,33 @@ export interface UpdateActionParams {
 // --- Params types for HabitifyApiClient methods ---
 
 export interface GetHabitStatusParams {
-  habitId: string
+  habit_id: string
   target_date?: string
 }
 
 export interface UpdateHabitStatusParams {
-  habitId: string
+  habit_id: string
   status: UpdateHabitStatus
   target_date?: string
 }
 
 export interface GetLogsParams {
-  habitId: string
+  habit_id: string
   from?: string
   to?: string
 }
 
 export interface AddLogParamsFull extends AddLogParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface DeleteLogParams {
-  habitId: string
-  logId: string
+  habit_id: string
+  log_id: string
 }
 
 export interface DeleteLogsParamsFull {
-  habitId: string
+  habit_id: string
   from?: string
   to?: string
 }
@@ -236,63 +236,63 @@ export interface GetMoodsParams {
 }
 
 export interface GetMoodParams {
-  moodId: string
+  mood_id: string
 }
 
 export type CreateMoodParamsFull = CreateMoodParams
 
 export interface UpdateMoodParamsFull extends UpdateMoodParams {
-  moodId: string
+  mood_id: string
 }
 
 export interface DeleteMoodParams {
-  moodId: string
+  mood_id: string
 }
 
 export type GetAreasParams = object
 
 export interface GetNotesParams {
-  habitId: string
+  habit_id: string
   from?: string
   to?: string
 }
 
 export interface AddTextNoteParamsFull extends AddTextNoteParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface AddImageNoteParamsFull extends AddImageNoteParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface DeleteNoteParams {
-  habitId: string
-  noteId: string
+  habit_id: string
+  note_id: string
 }
 
 export interface DeleteNotesParamsFull extends DeleteNotesParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface GetActionsParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface GetActionParams {
-  habitId: string
-  actionId: string
+  habit_id: string
+  action_id: string
 }
 
 export interface CreateActionParamsFull extends CreateActionParams {
-  habitId: string
+  habit_id: string
 }
 
 export interface UpdateActionParamsFull extends UpdateActionParams {
-  habitId: string
-  actionId: string
+  habit_id: string
+  action_id: string
 }
 
 export interface DeleteActionParams {
-  habitId: string
-  actionId: string
+  habit_id: string
+  action_id: string
 }
