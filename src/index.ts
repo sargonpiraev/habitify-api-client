@@ -101,10 +101,7 @@ export class HabitifyApiClient {
   async getHabitStatus(_params: GetHabitStatusParams): Promise<GetHabitStatusResult> {
     const { habit_id, target_date } = _params
     const params = { target_date: getTargetDate(target_date) }
-    const response = await this.client.get<ApiResponse<GetHabitStatusResult>>(
-      `/status/${habit_id}`,
-      { params }
-    )
+    const response = await this.client.get<ApiResponse<GetHabitStatusResult>>(`/status/${habit_id}`, { params })
     return response.data.data
   }
 
@@ -234,9 +231,7 @@ export class HabitifyApiClient {
     formData.append('image', params.image)
     formData.append('created_at', params.created_at)
     const headers = { 'Content-Type': 'multipart/form-data' }
-    const response = await this.client.post(`/notes/addImageNote/${habit_id}`, formData, {
-      headers,
-    })
+    const response = await this.client.post(`/notes/addImageNote/${habit_id}`, formData, { headers })
     return response.data.data
   }
 
