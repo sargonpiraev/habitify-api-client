@@ -8,13 +8,29 @@ import type {
   Area,
   Note,
   Action,
-  AddLogParams,
+  GetJournalParams,
+  GetHabitStatusParams,
   UpdateHabitStatusParams,
-  CreateMoodParams,
-  UpdateMoodParams,
-  AddTextNoteParams,
-  CreateActionParams,
-  UpdateActionParams,
+  GetLogsParams,
+  AddLogParamsFull,
+  DeleteLogParams,
+  DeleteLogsParamsFull,
+  GetMoodsParams,
+  GetMoodParams,
+  CreateMoodParamsFull,
+  UpdateMoodParamsFull,
+  DeleteMoodParams,
+  GetAreasParams,
+  GetNotesParams,
+  AddTextNoteParamsFull,
+  AddImageNoteParamsFull,
+  DeleteNoteParams,
+  DeleteNotesParamsFull,
+  GetActionsParams,
+  GetActionParams,
+  CreateActionParamsFull,
+  UpdateActionParamsFull,
+  DeleteActionParams,
 } from './types.js'
 
 export class HabitifyApiClient {
@@ -57,112 +73,132 @@ export class HabitifyApiClient {
   }
 
   // Journal methods
-  async getJournal(params?: {
-    targetDate?: string
-    areaId?: string
-    status?: 'in_progress' | 'completed' | 'failed' | 'skipped'
-    orderBy?: 'priority' | 'reminder_time' | 'status'
-    timeOfDay?:
-      | 'morning'
-      | 'afternoon'
-      | 'evening'
-      | 'any_time'
-      | Array<'morning' | 'afternoon' | 'evening' | 'any_time'>
-  }): Promise<Habit[]> {
+  async getJournal(params?: GetJournalParams): Promise<Habit[]> {
     return this.get('/journal', params)
   }
 
   // Habit methods
-  async getHabitStatus(habitId: string, targetDate?: string): Promise<GetHabitStatusResult> {
-    const params = targetDate ? { target_date: targetDate } : undefined
-    return this.get(`/habits/${habitId}/status`, params)
+  async getHabitStatus(params: GetHabitStatusParams): Promise<GetHabitStatusResult> {
+    const { habit_id, target_date } = params
+    const queryParams = target_date ? { target_date } : undefined
+    return this.get(`/habits/${habit_id}/status`, queryParams)
   }
 
-  async updateHabitStatus(habitId: string, params: UpdateHabitStatusParams): Promise<void> {
-    return this.put(`/habits/${habitId}/status`, params)
+  async updateHabitStatus(params: UpdateHabitStatusParams): Promise<void> {
+    const { habit_id, ...updateData } = params
+    return this.put(`/habits/${habit_id}/status`, updateData)
   }
 
   // Log methods
-  async getLogs(habitId: string, params?: { from?: string; to?: string }): Promise<Log[]> {
-    return this.get(`/habits/${habitId}/logs`, params)
+  async getLogs(params: GetLogsParams): Promise<Log[]> {
+    const { habit_id, ...queryParams } = params
+    return this.get(`/habits/${habit_id}/logs`, queryParams)
   }
 
-  async addLog(habitId: string, params: AddLogParams): Promise<Log> {
-    return this.post(`/habits/${habitId}/logs`, params)
+  async addLog(params: AddLogParamsFull): Promise<Log> {
+    const { habit_id, ...logData } = params
+    return this.post(`/habits/${habit_id}/logs`, logData)
   }
 
-  async deleteLog(habitId: string, logId: string): Promise<void> {
-    return this.delete(`/habits/${habitId}/logs/${logId}`)
+  async deleteLog(params: DeleteLogParams): Promise<void> {
+    const { habit_id, log_id } = params
+    return this.delete(`/habits/${habit_id}/logs/${log_id}`)
   }
 
-  async deleteLogs(habitId: string, params?: { from?: string; to?: string }): Promise<void> {
-    const url = `/habits/${habitId}/logs`
-    return this.client.delete(url, { params }).then((res) => res.data)
+  async deleteLogs(params: DeleteLogsParamsFull): Promise<void> {
+    const { habit_id, ...queryParams } = params
+    const url = `/habits/${habit_id}/logs`
+    return this.client.delete(url, { params: queryParams }).then((res) => res.data)
   }
 
   // Mood methods
-  async getMoods(targetDate?: string): Promise<Mood[]> {
-    const params = targetDate ? { target_date: targetDate } : undefined
+  async getMoods(params?: GetMoodsParams): Promise<Mood[]> {
     return this.get('/moods', params)
   }
 
-  async getMood(moodId: string): Promise<Mood> {
-    return this.get(`/moods/${moodId}`)
+  async getMood(params: GetMoodParams): Promise<Mood> {
+    const { mood_id } = params
+    return this.get(`/moods/${mood_id}`)
   }
 
-  async createMood(params: CreateMoodParams): Promise<Mood> {
+  async createMood(params: CreateMoodParamsFull): Promise<Mood> {
     return this.post('/moods', params)
   }
 
-  async updateMood(moodId: string, params: UpdateMoodParams): Promise<Mood> {
-    return this.put(`/moods/${moodId}`, params)
+  async updateMood(params: UpdateMoodParamsFull): Promise<Mood> {
+    const { mood_id, ...updateData } = params
+    return this.put(`/moods/${mood_id}`, updateData)
   }
 
-  async deleteMood(moodId: string): Promise<void> {
-    return this.delete(`/moods/${moodId}`)
+  async deleteMood(params: DeleteMoodParams): Promise<void> {
+    const { mood_id } = params
+    return this.delete(`/moods/${mood_id}`)
   }
 
   // Area methods
-  async getAreas(): Promise<Area[]> {
-    return this.get('/areas')
+  async getAreas(params?: GetAreasParams): Promise<Area[]> {
+    return this.get('/areas', params)
   }
 
   // Note methods
-  async getNotes(habitId: string, params?: { from?: string; to?: string }): Promise<Note[]> {
-    return this.get(`/habits/${habitId}/notes`, params)
+  async getNotes(params: GetNotesParams): Promise<Note[]> {
+    const { habit_id, ...queryParams } = params
+    return this.get(`/habits/${habit_id}/notes`, queryParams)
   }
 
-  async addTextNote(habitId: string, params: AddTextNoteParams): Promise<Note> {
-    return this.post(`/habits/${habitId}/notes`, params)
+  async addTextNote(params: AddTextNoteParamsFull): Promise<Note> {
+    const { habit_id, ...noteData } = params
+    return this.post(`/habits/${habit_id}/notes`, noteData)
   }
 
-  async deleteNote(habitId: string, noteId: string): Promise<void> {
-    return this.delete(`/habits/${habitId}/notes/${noteId}`)
+  async addImageNote(params: AddImageNoteParamsFull): Promise<Note> {
+    const { habit_id, image, created_at } = params
+    const formData = new FormData()
+    formData.append('image', image)
+    formData.append('created_at', created_at)
+
+    const response = await this.client.post(`/habits/${habit_id}/notes`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
   }
 
-  async deleteNotes(habitId: string, params?: { from?: string; to?: string }): Promise<void> {
-    const url = `/habits/${habitId}/notes`
-    return this.client.delete(url, { params }).then((res) => res.data)
+  async deleteNote(params: DeleteNoteParams): Promise<void> {
+    const { habit_id, note_id } = params
+    return this.delete(`/habits/${habit_id}/notes/${note_id}`)
+  }
+
+  async deleteNotes(params: DeleteNotesParamsFull): Promise<void> {
+    const { habit_id, ...queryParams } = params
+    const url = `/habits/${habit_id}/notes`
+    return this.client.delete(url, { params: queryParams }).then((res) => res.data)
   }
 
   // Action methods
-  async getActions(habitId: string): Promise<Action[]> {
-    return this.get(`/habits/${habitId}/actions`)
+  async getActions(params: GetActionsParams): Promise<Action[]> {
+    const { habit_id } = params
+    return this.get(`/habits/${habit_id}/actions`)
   }
 
-  async getAction(habitId: string, actionId: string): Promise<Action> {
-    return this.get(`/habits/${habitId}/actions/${actionId}`)
+  async getAction(params: GetActionParams): Promise<Action> {
+    const { habit_id, action_id } = params
+    return this.get(`/habits/${habit_id}/actions/${action_id}`)
   }
 
-  async createAction(habitId: string, params: CreateActionParams): Promise<Action> {
-    return this.post(`/habits/${habitId}/actions`, params)
+  async createAction(params: CreateActionParamsFull): Promise<Action> {
+    const { habit_id, ...actionData } = params
+    return this.post(`/habits/${habit_id}/actions`, actionData)
   }
 
-  async updateAction(habitId: string, actionId: string, params: UpdateActionParams): Promise<Action> {
-    return this.put(`/habits/${habitId}/actions/${actionId}`, params)
+  async updateAction(params: UpdateActionParamsFull): Promise<Action> {
+    const { habit_id, action_id, ...updateData } = params
+    return this.put(`/habits/${habit_id}/actions/${action_id}`, updateData)
   }
 
-  async deleteAction(habitId: string, actionId: string): Promise<void> {
-    return this.delete(`/habits/${habitId}/actions/${actionId}`)
+  async deleteAction(params: DeleteActionParams): Promise<void> {
+    const { habit_id, action_id } = params
+    return this.delete(`/habits/${habit_id}/actions/${action_id}`)
   }
 }
