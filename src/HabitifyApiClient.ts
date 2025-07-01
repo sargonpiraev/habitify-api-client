@@ -26,7 +26,7 @@ export class HabitifyApiClient {
     }
 
     this.client = axios.create({
-      baseURL: 'https://api.habitify.me/v1',
+      baseURL: 'https://api.habitify.me',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
