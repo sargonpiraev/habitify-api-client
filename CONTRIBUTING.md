@@ -5,11 +5,13 @@ Thank you for your interest in contributing! This guide will help you get starte
 ## Development Setup
 
 **Prerequisites**
+
 - Node.js >= v18.0.0
 - npm >= 8.0.0
 - Access to Habitify API for testing
 
 **Setup**
+
 ```bash
 # Clone repository
 git clone https://gitlab.com/sargonpiraev/habitify-api-client.git
@@ -23,6 +25,7 @@ npm run dev
 ```
 
 **Build and Test**
+
 ```bash
 # Build the project
 npm run build
@@ -43,6 +46,7 @@ HABITIFY_API_KEY=your-key npm run test-client
 ## Development Guidelines
 
 **Code Style**
+
 - Use TypeScript for all code
 - Follow existing code patterns and conventions
 - Add JSDoc comments for public APIs
@@ -50,12 +54,14 @@ HABITIFY_API_KEY=your-key npm run test-client
 - Maintain tree-shakeable exports
 
 **Client Development**
+
 - Each API endpoint should have proper TypeScript types
 - Include comprehensive input validation
 - Provide clear error messages
 - Add examples to README for new functionality
 
 **Testing**
+
 - Write tests for new client functions
 - Test error handling scenarios
 - Ensure type safety in tests
@@ -70,6 +76,7 @@ HABITIFY_API_KEY=your-key npm run test-client
 5. **Submit** a pull request with a clear description
 
 **Pull Request Requirements**
+
 - Clear, descriptive title
 - Description of changes and motivation
 - Tests pass and code is linted
@@ -104,4 +111,4 @@ When reporting bugs or requesting features:
 - 📧 Email: [sargonpiraev@gmail.com](mailto:sargonpiraev@gmail.com)
 - 🐛 Report issues on [GitLab](https://gitlab.com/sargonpiraev/habitify-api-client/issues)
 
-Thank you for contributing! 🎉 
+Thank you for contributing! 🎉

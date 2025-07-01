@@ -47,8 +47,9 @@
     "prepare": "husky",
     "commitlint": "commitlint --edit",
     "typecheck": "tsc --noEmit",
-    "audit": "npm audit",
-    "test-client": "tsx scripts/test-client.ts"
+    "audit": "npm audit --omit=dev",
+    "test-request-id": "tsx scripts/test-request-id.ts",
+    "test-simple": "tsx scripts/test-simple.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
