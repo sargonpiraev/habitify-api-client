@@ -1,18 +1,47 @@
 {
   "name": "@sargonpiraev/habitify-api-client",
   "version": "0.0.1",
-  "description": "",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "description": "A TypeScript client for the Habitify API with complete type safety and modern developer experience.",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "type": "module",
   "files": [
-    "build"
+    "build",
+    "README.md",
+    "LICENSE"
   ],
+  "keywords": [
+    "api-client",
+    "typescript",
+    "sdk",
+    "habitify",
+    "habits",
+    "productivity",
+    "tracking"
+  ],
+  "author": {
+    "name": "Sargon Piraev",
+    "email": "sargonpiraev@gmail.com",
+    "url": "https://sargonpiraev.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/sargonpiraev/habitify-api-client.git"
+  },
+  "homepage": "https://gitlab.com/sargonpiraev/habitify-api-client#readme",
+  "bugs": {
+    "url": "https://gitlab.com/sargonpiraev/habitify-api-client/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "jest --passWithNoTests --coverage",
     "dev": "tsx watch ./src/index.ts",
     "build": "tsc -p tsconfig.json",
     "lint": "eslint ./src --ext .ts",
+    "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
@@ -44,7 +73,6 @@
     "access": "public"
   },
   "dependencies": {
-    "axios": "^1.9.0",
-    "axios-logger": "^2.8.1"
+    "axios": "^1.9.0"
   }
 }

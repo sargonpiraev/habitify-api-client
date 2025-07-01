@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios'
+import { AxiosInstance } from 'axios'
+import { createHabitifyClient, type HabitifyClientConfig, type Logger } from './client.js'
 import {
   ApiResponse,
   GetJournalParams,
@@ -32,6 +33,12 @@ import {
   DeleteActionParams,
 } from './types.js'
 
+// Export client creation function and types
+export { createHabitifyClient, type HabitifyClientConfig, type Logger }
+
+// Export all types
+export * from './types.js'
+
 // YYYY-MM-DDTHH:mm:ss±hh:mm
 export const toISOString = (date: string) => {
   const d = new Date(date)
@@ -52,12 +59,6 @@ export const toISOString = (date: string) => {
 
 const getTargetDate = (date: string | undefined) => toISOString(date ?? new Date().toISOString())
 
-type Logger = {
-  log: (...message: (string | object)[]) => void
-  error: (...message: (string | object)[]) => void
-  debug: (...message: (string | object)[]) => void
-}
-
 export class HabitifyApiClient {
   public client: AxiosInstance
 
@@ -65,40 +66,10 @@ export class HabitifyApiClient {
     private readonly apiKey: string,
     private readonly logger: Logger
   ) {
-    this.client = axios.create({
-      baseURL: 'https://api.habitify.me',
-      headers: { Authorization: this.apiKey },
+    this.client = createHabitifyClient({
+      apiKey,
+      logger
     })
-    this.client.interceptors.request.use(
-      (request) => {
-        const { method, url, params } = request
-        this.logger.debug('Request', JSON.stringify({ method, url, params }, null, 2))
-        return request
-      },
-      (error) => {
-        const { message, response } = error
-        const { data } = response
-        this.logger.error('Request Error:', { message, response: { data } })
-        return Promise.reject(error)
-      }
-    )
-    this.client.interceptors.response.use(
-      (response) => {
-        const { data } = response
-        this.logger.debug('Response:', JSON.stringify({ data }))
-        const errorMessage = data.message || 'Unknown API error'
-        if (data.status === false) throw new Error(errorMessage)
-        return response
-      },
-      (error) => {
-        const { message, response } = error
-        const { data } = response
-        this.logger.error('Response Error:', { message, response: { data } })
-        const errorMessage = data.message || 'Unknown API error'
-        if (data.status === false) throw new Error(errorMessage)
-        return Promise.reject(error)
-      }
-    )
   }
 
   /**
@@ -242,7 +213,7 @@ export class HabitifyApiClient {
    */
   async addImageNote(_params: AddImageNoteParamsFull): Promise<void> {
     const { habit_id, ...params } = _params
-    const formData = new FormData()
+    const formData = new globalThis.FormData()
     formData.append('image', params.image)
     formData.append('created_at', params.created_at)
     const headers = { 'Content-Type': 'multipart/form-data' }
