@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from 'axios'
 import type {
   Habit,
@@ -44,65 +43,49 @@ export class HabitifyApiClient {
     this.client = axios.create({
       baseURL: 'https://api.habitify.me',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: apiKey,
         'Content-Type': 'application/json',
       },
-      timeout: 30000,
     })
-  }
-
-  // Raw HTTP methods for flexibility
-  async get<T = any>(url: string, params?: any): Promise<T> {
-    const response = await this.client.get(url, { params })
-    return response.data
-  }
-
-  async post<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.client.post(url, data)
-    return response.data
-  }
-
-  async put<T = any>(url: string, data?: any): Promise<T> {
-    const response = await this.client.put(url, data)
-    return response.data
-  }
-
-  async delete<T = any>(url: string): Promise<T> {
-    const response = await this.client.delete(url)
-    return response.data
   }
 
   // Journal methods
   async getJournal(params?: GetJournalParams): Promise<Habit[]> {
-    return this.get('/journal', params)
+    const response = await this.client.get('/journal', { params })
+    return response.data
   }
 
   // Habit methods
   async getHabitStatus(params: GetHabitStatusParams): Promise<GetHabitStatusResult> {
     const { habit_id, target_date } = params
     const queryParams = target_date ? { target_date } : undefined
-    return this.get(`/habits/${habit_id}/status`, queryParams)
+    const response = await this.client.get(`/habits/${habit_id}/status`, { params: queryParams })
+    return response.data
   }
 
   async updateHabitStatus(params: UpdateHabitStatusParams): Promise<void> {
     const { habit_id, ...updateData } = params
-    return this.put(`/habits/${habit_id}/status`, updateData)
+    const response = await this.client.put(`/habits/${habit_id}/status`, updateData)
+    return response.data
   }
 
   // Log methods
   async getLogs(params: GetLogsParams): Promise<Log[]> {
     const { habit_id, ...queryParams } = params
-    return this.get(`/habits/${habit_id}/logs`, queryParams)
+    const response = await this.client.get(`/habits/${habit_id}/logs`, { params: queryParams })
+    return response.data
   }
 
   async addLog(params: AddLogParamsFull): Promise<Log> {
     const { habit_id, ...logData } = params
-    return this.post(`/habits/${habit_id}/logs`, logData)
+    const response = await this.client.post(`/habits/${habit_id}/logs`, logData)
+    return response.data
   }
 
   async deleteLog(params: DeleteLogParams): Promise<void> {
     const { habit_id, log_id } = params
-    return this.delete(`/habits/${habit_id}/logs/${log_id}`)
+    const response = await this.client.delete(`/habits/${habit_id}/logs/${log_id}`)
+    return response.data
   }
 
   async deleteLogs(params: DeleteLogsParamsFull): Promise<void> {
@@ -113,42 +96,50 @@ export class HabitifyApiClient {
 
   // Mood methods
   async getMoods(params?: GetMoodsParams): Promise<Mood[]> {
-    return this.get('/moods', params)
+    const response = await this.client.get('/moods', { params })
+    return response.data
   }
 
   async getMood(params: GetMoodParams): Promise<Mood> {
     const { mood_id } = params
-    return this.get(`/moods/${mood_id}`)
+    const response = await this.client.get(`/moods/${mood_id}`)
+    return response.data
   }
 
   async createMood(params: CreateMoodParamsFull): Promise<Mood> {
-    return this.post('/moods', params)
+    const response = await this.client.post('/moods', params)
+    return response.data
   }
 
   async updateMood(params: UpdateMoodParamsFull): Promise<Mood> {
     const { mood_id, ...updateData } = params
-    return this.put(`/moods/${mood_id}`, updateData)
+    const response = await this.client.put(`/moods/${mood_id}`, updateData)
+    return response.data
   }
 
   async deleteMood(params: DeleteMoodParams): Promise<void> {
     const { mood_id } = params
-    return this.delete(`/moods/${mood_id}`)
+    const response = await this.client.delete(`/moods/${mood_id}`)
+    return response.data
   }
 
   // Area methods
   async getAreas(params?: GetAreasParams): Promise<Area[]> {
-    return this.get('/areas', params)
+    const response = await this.client.get('/areas', { params })
+    return response.data
   }
 
   // Note methods
   async getNotes(params: GetNotesParams): Promise<Note[]> {
     const { habit_id, ...queryParams } = params
-    return this.get(`/habits/${habit_id}/notes`, queryParams)
+    const response = await this.client.get(`/habits/${habit_id}/notes`, { params: queryParams })
+    return response.data
   }
 
   async addTextNote(params: AddTextNoteParamsFull): Promise<Note> {
     const { habit_id, ...noteData } = params
-    return this.post(`/habits/${habit_id}/notes`, noteData)
+    const response = await this.client.post(`/habits/${habit_id}/notes`, noteData)
+    return response.data
   }
 
   async addImageNote(params: AddImageNoteParamsFull): Promise<Note> {
@@ -167,7 +158,8 @@ export class HabitifyApiClient {
 
   async deleteNote(params: DeleteNoteParams): Promise<void> {
     const { habit_id, note_id } = params
-    return this.delete(`/habits/${habit_id}/notes/${note_id}`)
+    const response = await this.client.delete(`/habits/${habit_id}/notes/${note_id}`)
+    return response.data
   }
 
   async deleteNotes(params: DeleteNotesParamsFull): Promise<void> {
@@ -179,26 +171,31 @@ export class HabitifyApiClient {
   // Action methods
   async getActions(params: GetActionsParams): Promise<Action[]> {
     const { habit_id } = params
-    return this.get(`/habits/${habit_id}/actions`)
+    const response = await this.client.get(`/habits/${habit_id}/actions`)
+    return response.data
   }
 
   async getAction(params: GetActionParams): Promise<Action> {
     const { habit_id, action_id } = params
-    return this.get(`/habits/${habit_id}/actions/${action_id}`)
+    const response = await this.client.get(`/habits/${habit_id}/actions/${action_id}`)
+    return response.data
   }
 
   async createAction(params: CreateActionParamsFull): Promise<Action> {
     const { habit_id, ...actionData } = params
-    return this.post(`/habits/${habit_id}/actions`, actionData)
+    const response = await this.client.post(`/habits/${habit_id}/actions`, actionData)
+    return response.data
   }
 
   async updateAction(params: UpdateActionParamsFull): Promise<Action> {
     const { habit_id, action_id, ...updateData } = params
-    return this.put(`/habits/${habit_id}/actions/${action_id}`, updateData)
+    const response = await this.client.put(`/habits/${habit_id}/actions/${action_id}`, updateData)
+    return response.data
   }
 
   async deleteAction(params: DeleteActionParams): Promise<void> {
     const { habit_id, action_id } = params
-    return this.delete(`/habits/${habit_id}/actions/${action_id}`)
+    const response = await this.client.delete(`/habits/${habit_id}/actions/${action_id}`)
+    return response.data
   }
 }
