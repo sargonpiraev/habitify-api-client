@@ -62,7 +62,7 @@ test_lint:
 test_vulnerabilities:
   stage: test
   script:
-    - npm audit
+    - npm run audit
 
 build:
   stage: build
