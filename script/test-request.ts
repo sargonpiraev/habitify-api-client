@@ -6,14 +6,12 @@ dotenv.config()
 
 const habitifyApiClient = new HabitifyApiClient(process.env.HABITIFY_API_KEY || '')
 
-const result = await habitifyApiClient.getAreas()
+console.log(await habitifyApiClient.getAreas())
 
-assert.deepEqual(result, {
-  message: 'Success',
-  data: [],
-  version: 'v1.2',
-  status: true,
-  errors: [],
-})
-
-console.log(result)
+console.log(
+  await habitifyApiClient
+    .getJournal({
+      target_date: '2025-07-01T00:00:00+00:00',
+    })
+    .catch((x) => console.error(x.response.data))
+)
